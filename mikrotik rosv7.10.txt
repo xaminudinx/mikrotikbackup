@@ -1,0 +1,32 @@
+:local alamatftp "192.168.2.2";
+:local userftp "userftp";
+:local passftp "passftp";
+:local urlnya "http://192.168.2.2/backup/backupuser.php";
+:local token "isitoken";
+:local idtelegram "isiid";
+:local passzip "isipasswordzip";
+
+#dibawah ini tidak perlu diedit
+:local date [ /system clock get date ];
+:local time [ /system clock get time ];
+:local clock  [:pick $time 0 2];
+:local min  [:pick $time 3 5];
+:local day  [:pick $date 8 11];
+:local year [:pick $date 0 4];
+:local month [:pick $date 5 7];
+:local mik [/system identity get name];
+:local rename "$mik$day$month$year$clock$min";
+
+/export file="backupotomatis";
+/system backup save dont-encrypt=yes name="backupotomatis" encryption=aes-sha256;
+
+/tool fetch mode=ftp address="$alamatftp" src-path="backupotomatis.backup" user="$userftp" password="$passftp" dst-path="/backup/$rename.backup" port=21 upload=yes
+/tool fetch mode=ftp address="$alamatftp" src-path="backupotomatis.rsc" user="$userftp" password="$passftp" dst-path="/backup/$rename.rsc" port=21 upload=yes
+
+/tool fetch http-method=post url="$urlnya" http-data="nama=$mik&token=$token&idtele=$idtelegram&namafile=$rename&passwordzip=$passzip" keep-result=no;
+
+
+:delay 5s
+
+/file remove backupotomatis.backup;
+/file remove backupotomatis.rsc;
