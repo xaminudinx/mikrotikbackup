@@ -1,5 +1,5 @@
 :local alamatftp "192.168.2.2";
-:local userftp "stb";
+:local userftp "userftp";
 :local passftp "passftp";
 :local urlnya "http://192.168.2.2/backup/backupuser.php";
 :local token "isitoken";
